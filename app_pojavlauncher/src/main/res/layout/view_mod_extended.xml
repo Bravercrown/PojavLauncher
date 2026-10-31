@@ -5,7 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <TextView
         android:id="@+id/mod_extended_error_textview"
         android:layout_width="match_parent"
@@ -20,20 +19,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/_30sdp"
+        android:focusable="true"
+        android:nextFocusDown="@id/mod_extended_select_version_button"
         android:layout_marginVertical="@dimen/padding_moderate"
-        app:layout_constraintTop_toBottomOf="@+id/mod_extended_error_textview"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/mod_extended_error_textview" />
 
     <com.kdt.mcgui.MineButton
         android:id="@+id/mod_extended_select_version_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:enabled="false"
+        android:focusable="true"
+        android:nextFocusUp="@id/mod_extended_version_spinner"
         android:text="@string/generic_install"
         android:layout_marginHorizontal="@dimen/padding_large"
         android:layout_marginTop="@dimen/padding_moderate"
         android:layout_marginBottom="@dimen/padding_large"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mod_extended_version_spinner" />
 

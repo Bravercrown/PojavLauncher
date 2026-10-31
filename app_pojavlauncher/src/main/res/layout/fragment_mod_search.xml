@@ -8,8 +8,6 @@
     android:paddingHorizontal="@dimen/fragment_padding_medium"
     >
 
-
-
     <!--
         Cosmetic layout to have a better scrolling separation
      -->
@@ -23,11 +21,9 @@
         android:paddingVertical="@dimen/padding_medium"
         android:layout_marginTop="@dimen/fragment_padding_medium"
         android:layout_marginHorizontal="@dimen/fragment_padding_medium"
-
         app:layout_constraintTop_toTopOf="parent"
-
-
         >
+
         <!-- Search text -->
         <EditText
             android:id="@+id/search_mod_edittext"
@@ -36,11 +32,11 @@
             android:background="@drawable/background_line"
             android:textSize="@dimen/_13ssp"
             android:translationZ="2dp"
-
             android:ems="10"
             android:hint="@string/hint_search_modpack"
             android:inputType="textPersonName"
             android:paddingHorizontal="@dimen/padding_heavy"
+            android:nextFocusDown="@id/search_mod_list"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/search_mod_filter"
@@ -53,13 +49,12 @@
             android:background="?android:attr/selectableItemBackground"
             android:minWidth="@dimen/_38sdp"
             android:src="@drawable/ic_filter"
-
             android:paddingHorizontal="@dimen/padding_medium"
-
+            android:focusable="true"
+            android:nextFocusDown="@id/search_mod_list"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/search_mod_edittext"
             app:layout_constraintBottom_toBottomOf="@id/search_mod_edittext"
-
             />
 
         <ProgressBar
@@ -72,13 +67,7 @@
             app:layout_constraintTop_toBottomOf="@+id/search_mod_edittext"
             tools:layout_editor_absoluteX="13dp" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_mod_list"
@@ -86,7 +75,9 @@
         android:layout_height="match_parent"
         android:paddingTop="@dimen/_15sdp"
         android:clipToPadding="false"
-
+        android:focusable="true"
+        android:descendantFocusability="afterDescendants"
+        android:nextFocusUp="@id/search_mod_edittext"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />

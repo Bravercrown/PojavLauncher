@@ -262,12 +262,19 @@ public class LauncherActivity extends BaseActivity {
         getSupportFragmentManager().unregisterFragmentLifecycleCallbacks(mFragmentCallbackListener);
     }
 
-    /** Controller support: B goes back */
+    /** Controller support: B goes back, A triggers click on focused view */
     @Override
     public boolean onKeyDown(int keyCode, android.view.KeyEvent event) {
         if(keyCode == android.view.KeyEvent.KEYCODE_BUTTON_B) {
             onBackPressed();
             return true;
+        }
+        if(keyCode == android.view.KeyEvent.KEYCODE_BUTTON_A) {
+            View currentFocus = getCurrentFocus();
+            if(currentFocus != null && !(currentFocus instanceof android.widget.EditText)) {
+                currentFocus.performClick();
+                return true;
+            }
         }
         return super.onKeyDown(keyCode, event);
     }

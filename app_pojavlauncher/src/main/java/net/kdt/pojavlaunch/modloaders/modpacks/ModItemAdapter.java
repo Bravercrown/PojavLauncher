@@ -174,6 +174,8 @@ public class ModItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     mExtendedButton = mExtendedLayout.findViewById(R.id.mod_extended_select_version_button);
                     mExtendedSpinner = mExtendedLayout.findViewById(R.id.mod_extended_version_spinner);
                     mExtendedErrorTextView = mExtendedLayout.findViewById(R.id.mod_extended_error_textview);
+                    mExtendedButton.setFocusable(true);
+                    mExtendedSpinner.setFocusable(true);
 
                     mExtendedButton.setOnClickListener(v1 -> mModpackApi.handleInstallation(
                             mExtendedButton.getContext().getApplicationContext(),
@@ -273,6 +275,9 @@ public class ModItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 mExtendedErrorTextView.setVisibility(View.GONE);
                 mVersionAdapter.setObjects(Arrays.asList(detailedItem.versionNames));
                 mExtendedSpinner.setAdapter(mVersionAdapter);
+                if(mExtendedButton != null) {
+                    mExtendedButton.post(() -> mExtendedButton.requestFocus());
+                }
             } else {
                 closeDetailedView();
                 setInstallEnabled(false);
@@ -291,6 +296,9 @@ public class ModItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) mExtendedLayout.getLayoutParams();
             params.topToBottom = futureBottom > mIconView.getBottom() ? R.id.mod_body_textview : R.id.mod_thumbnail_imageview;
             mExtendedLayout.setLayoutParams(params);
+            if(mExtendedButton != null && mExtendedButton.isEnabled()) {
+                mExtendedButton.post(() -> mExtendedButton.requestFocus());
+            }
         }
 
         private void closeDetailedView(){
