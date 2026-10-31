@@ -14,6 +14,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.InputDevice;
+import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -202,8 +203,8 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
             CallbackBridge.sendCursorPos(   e.getX(i) * LauncherPreferences.PREF_SCALE_FACTOR, e.getY(i) * LauncherPreferences.PREF_SCALE_FACTOR);
             return true; //mouse event handled successfully
         }
-        if (mIngameProcessor == null || mInGUIProcessor == null) return true;
-        return mCurrentTouchProcessor.processTouchEvent(e);
+        // Controller-only build: finger touches on the game surface are ignored.
+        return true;
     }
 
     private void createGamepad(View contextView, InputDevice inputDevice) {
@@ -279,7 +280,17 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
         //Even weirder, is is unknown why a key or another is selected to trigger a keyEvent
         if((event.getFlags() & KeyEvent.FLAG_SOFT_KEYBOARD) == KeyEvent.FLAG_SOFT_KEYBOARD){
             if(eventKeycode == KeyEvent.KEYCODE_ENTER) return true; //We already listen to it.
-            touchCharInput.dispatchKeyEvent(event);
+            if(touchCharInput.hasFocus()) {
+                touchCharInput.dispatchKeyEvent(event);
+                return true;
+            }
+            // The hidden input is not active, so it would silently drop the key (this made symbols
+            // like '@' disappear). Send the typed character straight to the game instead.
+            int typedChar = event.getUnicodeChar();
+            if(event.getAction() == KeyEvent.ACTION_DOWN && typedChar > 0
+                    && (typedChar & KeyCharacterMap.COMBINING_ACCENT) == 0) {
+                CallbackBridge.sendChar((char) typedChar, CallbackBridge.getCurrentMods());
+            }
             return true;
         }
 

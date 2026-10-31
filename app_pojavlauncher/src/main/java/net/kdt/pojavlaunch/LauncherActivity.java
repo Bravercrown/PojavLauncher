@@ -262,6 +262,16 @@ public class LauncherActivity extends BaseActivity {
         getSupportFragmentManager().unregisterFragmentLifecycleCallbacks(mFragmentCallbackListener);
     }
 
+    /** Controller support: B goes back */
+    @Override
+    public boolean onKeyDown(int keyCode, android.view.KeyEvent event) {
+        if(keyCode == android.view.KeyEvent.KEYCODE_BUTTON_B) {
+            onBackPressed();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     /** Custom implementation to feel more natural when a backstack isn't present */
     @Override
     public void onBackPressed() {

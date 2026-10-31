@@ -35,6 +35,12 @@
     <string name="mcl_launch_download_assets">Bereite das Herunterladen der Ressourcen vor</string>
     <string name="mcl_options">Optionen</string>
     <string name="mcl_option_customcontrol">Benutzerdefinierte Steuerung</string>
+    <string name="mcl_option_controller_mapping">Controller-Belegung</string>
+    <string name="mcl_button_mods">Mods &amp; Addons</string>
+    <string name="mod_download_no_url">Diese Mod kann nicht im Launcher heruntergeladen werden (der Autor hat Downloads durch Dritte deaktiviert)</string>
+    <string name="mod_download_downloading">%s wird heruntergeladen…</string>
+    <string name="mod_download_done">%s wurde in den Mods-Ordner heruntergeladen</string>
+    <string name="mod_download_failed">Mod-Download fehlgeschlagen</string>
     <string name="mcl_setting_title_use_surface_view">Verwende alternatives Oberflächen-Rendering</string>
     <string name="mcl_setting_subtitle_use_surface_view">Kann die Leistung in GPU abhängigen Szenarien verbessern.</string>
     <string name="mcl_setting_title_ignore_notch">Ignoriere die Kameraeinkerbung</string>

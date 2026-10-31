@@ -14,6 +14,8 @@ public class GamepadMap {
     public static final short MOUSE_RIGHT = -5;
     // Workaround, because GLFW_KEY_UNKNOWN and GLFW_MOUSE_BUTTON_LEFT are both 0
     public static final short UNSPECIFIED = -6;
+    // Toggles the on-screen keyboard
+    public static final short KEYBOARD = -7;
 
     /*
     This class is just here to store the mapping
@@ -93,30 +95,34 @@ public class GamepadMap {
     public static GamepadMap getDefaultGameMap(){
         GamepadMap gameMap = GamepadMap.createEmptyMap();
 
-        gameMap.BUTTON_A.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_SPACE;
-        gameMap.BUTTON_B.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_Q;
-        gameMap.BUTTON_X.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_E;
-        gameMap.BUTTON_Y.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_F;
+        // Face buttons
+        gameMap.BUTTON_A.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_SPACE;      // jump
+        gameMap.BUTTON_B.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_LEFT_SHIFT; // sneak
+        gameMap.BUTTON_X.keycodes[0] = GamepadMap.KEYBOARD;                  // on-screen keyboard
+        gameMap.BUTTON_Y.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_E;          // inventory
 
+        // Left stick = movement
         gameMap.DIRECTION_FORWARD.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_W;
         gameMap.DIRECTION_BACKWARD.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_S;
         gameMap.DIRECTION_RIGHT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_D;
         gameMap.DIRECTION_LEFT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_A;
 
-        gameMap.DPAD_UP.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_LEFT_SHIFT;
-        gameMap.DPAD_DOWN.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_O;    //For mods ?
-        gameMap.DPAD_RIGHT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_K;   //For mods ?
-        gameMap.DPAD_LEFT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_J;    //For mods ?
+        // D-pad
+        gameMap.DPAD_UP.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_T;           // chat
+        gameMap.DPAD_DOWN.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_Q;         // drop
+        gameMap.DPAD_RIGHT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_ESCAPE;   // menu
+        gameMap.DPAD_LEFT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_F5;        // camera perspective
 
-        gameMap.SHOULDER_LEFT.keycodes[0] = GamepadMap.MOUSE_SCROLL_UP;
-        gameMap.SHOULDER_RIGHT.keycodes[0] = GamepadMap.MOUSE_SCROLL_DOWN;
+        // Bumpers = hotbar scrolling
+        gameMap.SHOULDER_LEFT.keycodes[0] = GamepadMap.MOUSE_SCROLL_UP;      // hotbar left
+        gameMap.SHOULDER_RIGHT.keycodes[0] = GamepadMap.MOUSE_SCROLL_DOWN;   // hotbar right
 
-        gameMap.TRIGGER_LEFT.keycodes[0] = GamepadMap.MOUSE_RIGHT;
-        gameMap.TRIGGER_RIGHT.keycodes[0] = GamepadMap.MOUSE_LEFT;
+        // Triggers
+        gameMap.TRIGGER_LEFT.keycodes[0] = GamepadMap.MOUSE_RIGHT;           // place / use
+        gameMap.TRIGGER_RIGHT.keycodes[0] = GamepadMap.MOUSE_LEFT;           // attack / break
 
-        gameMap.THUMBSTICK_LEFT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_LEFT_CONTROL;
-        gameMap.THUMBSTICK_RIGHT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_LEFT_SHIFT;
-        gameMap.THUMBSTICK_RIGHT.isToggleable = true;
+        // Stick clicks. Right stick = camera, its click is unused.
+        gameMap.THUMBSTICK_LEFT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_LEFT_CONTROL; // sprint
 
         gameMap.BUTTON_START.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_ESCAPE;
         gameMap.BUTTON_SELECT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_TAB;
@@ -130,14 +136,10 @@ public class GamepadMap {
     public static GamepadMap getDefaultMenuMap(){
         GamepadMap menuMap = GamepadMap.createEmptyMap();
 
-        menuMap.BUTTON_A.keycodes[0] = GamepadMap.MOUSE_LEFT;
-        menuMap.BUTTON_B.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_ESCAPE;
-        menuMap.BUTTON_X.keycodes[0] = GamepadMap.MOUSE_RIGHT;
-        {
-            short[] keycodes = menuMap.BUTTON_Y.keycodes;
-            keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_LEFT_SHIFT;
-            keycodes[1] = GamepadMap.MOUSE_RIGHT;
-        }
+        menuMap.BUTTON_A.keycodes[0] = GamepadMap.MOUSE_LEFT;                // select
+        menuMap.BUTTON_B.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_ESCAPE;     // cancel
+        menuMap.BUTTON_X.keycodes[0] = GamepadMap.KEYBOARD;                  // on-screen keyboard
+        menuMap.BUTTON_Y.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_E;          // close inventory
 
         {
             short[] keycodes = menuMap.DIRECTION_FORWARD.keycodes;
@@ -148,13 +150,17 @@ public class GamepadMap {
             keycodes[0] = keycodes[1] = keycodes[2] = keycodes[3] = GamepadMap.MOUSE_SCROLL_DOWN;
         }
 
-        menuMap.DPAD_DOWN.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_O; //For mods ?
-        menuMap.DPAD_RIGHT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_K; //For mods ?
-        menuMap.DPAD_LEFT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_J; //For mods ?
+        menuMap.DPAD_UP.keycodes[0] = GamepadMap.MOUSE_SCROLL_UP;
+        menuMap.DPAD_DOWN.keycodes[0] = GamepadMap.MOUSE_SCROLL_DOWN;
+        menuMap.DPAD_RIGHT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_ESCAPE;
 
         menuMap.SHOULDER_LEFT.keycodes[0] = GamepadMap.MOUSE_SCROLL_UP;
         menuMap.SHOULDER_RIGHT.keycodes[0] = GamepadMap.MOUSE_SCROLL_DOWN;
 
+        menuMap.TRIGGER_LEFT.keycodes[0] = GamepadMap.MOUSE_RIGHT;
+        menuMap.TRIGGER_RIGHT.keycodes[0] = GamepadMap.MOUSE_LEFT;
+
+        menuMap.BUTTON_START.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_ESCAPE;
         menuMap.BUTTON_SELECT.keycodes[0] = LwjglGlfwKeycode.GLFW_KEY_ESCAPE;
 
         return menuMap;
@@ -185,6 +191,6 @@ public class GamepadMap {
     }
 
     public static String[] getSpecialKeycodeNames() {
-        return new String[] {"UNSPECIFIED", "MOUSE_RIGHT", "MOUSE_MIDDLE", "MOUSE_LEFT", "SCROLL_UP", "SCROLL_DOWN"};
+        return new String[] {"KEYBOARD", "UNSPECIFIED", "MOUSE_RIGHT", "MOUSE_MIDDLE", "MOUSE_LEFT", "SCROLL_UP", "SCROLL_DOWN"};
     }
 }

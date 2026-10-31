@@ -84,7 +84,7 @@ public class CurseforgeApi implements ModpackApi{
                     dataElement.get("id").getAsString(),
                     dataElement.get("name").getAsString(),
                     dataElement.get("summary").getAsString(),
-                    dataElement.getAsJsonObject("logo").get("thumbnailUrl").getAsString());
+                    getThumbnailUrl(dataElement));
             modItemList.add(modItem);
         }
         if(curseforgeSearchResult == null) curseforgeSearchResult = new CurseforgeSearchResult();
@@ -93,6 +93,13 @@ public class CurseforgeApi implements ModpackApi{
         curseforgeSearchResult.previousOffset += dataArray.size();
         return curseforgeSearchResult;
 
+    }
+
+    private static String getThumbnailUrl(JsonObject dataElement) {
+        JsonElement logo = dataElement.get("logo");
+        if(logo == null || !logo.isJsonObject()) return "";
+        JsonElement thumb = logo.getAsJsonObject().get("thumbnailUrl");
+        return (thumb == null || thumb.isJsonNull()) ? "" : thumb.getAsString();
     }
 
     @Override
@@ -114,7 +121,7 @@ public class CurseforgeApi implements ModpackApi{
             versionNames[i] = modDetail.get("displayName").getAsString();
 
             JsonElement downloadUrl = modDetail.get("downloadUrl");
-            versionUrls[i] = downloadUrl.getAsString();
+            versionUrls[i] = (downloadUrl == null || downloadUrl.isJsonNull()) ? null : downloadUrl.getAsString();
 
             JsonArray gameVersions = modDetail.getAsJsonArray("gameVersions");
             for(JsonElement jsonElement : gameVersions) {

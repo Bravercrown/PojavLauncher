@@ -47,6 +47,12 @@
 
     <string name="mcl_options">Options</string>
     <string name="mcl_option_customcontrol">Custom controls</string>
+    <string name="mcl_option_controller_mapping">Controller mapping</string>
+    <string name="mcl_button_mods">Mods &amp; addons</string>
+    <string name="mod_download_no_url">This mod cannot be downloaded in the launcher (the author disabled third-party downloads)</string>
+    <string name="mod_download_downloading">Downloading %s…</string>
+    <string name="mod_download_done">%s was downloaded into the mods folder</string>
+    <string name="mod_download_failed">Failed to download the mod</string>
 
 
     <string name="mcl_setting_title_use_surface_view">Use alternate surface rendering</string>

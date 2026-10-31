@@ -23,7 +23,7 @@ public class GamepadMapStore {
     }
 
     private static void loadIfNecessary() {
-        if(sMapStore == null) return;
+        if(sMapStore != null) return;
         load();
     }
 

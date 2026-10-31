@@ -1,6 +1,7 @@
 package net.kdt.pojavlaunch.modloaders.modpacks.api;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.kdt.mcgui.ProgressLayout;
 
@@ -69,8 +70,8 @@ public class ModrinthApi implements ModpackApi{
                     hit.get("project_type").getAsString().equals("modpack"),
                     hit.get("project_id").getAsString(),
                     hit.get("title").getAsString(),
-                    hit.get("description").getAsString(),
-                    hit.get("icon_url").getAsString()
+                    safeString(hit, "description"),
+                    safeString(hit, "icon_url")
             );
         }
         if(modrinthSearchResult == null) modrinthSearchResult = new ModrinthSearchResult();
@@ -78,6 +79,13 @@ public class ModrinthApi implements ModpackApi{
         modrinthSearchResult.results = items;
         modrinthSearchResult.totalResultCount = response.get("total_hits").getAsInt();
         return modrinthSearchResult;
+    }
+
+    /** Mods frequently have no icon/description: the API then returns JSON null instead of a string */
+    private static String safeString(JsonObject object, String key) {
+        JsonElement element = object.get(key);
+        if(element == null || element.isJsonNull()) return "";
+        return element.getAsString();
     }
 
     @Override

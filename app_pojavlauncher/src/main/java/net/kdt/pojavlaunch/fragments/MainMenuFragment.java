@@ -3,7 +3,6 @@ package net.kdt.pojavlaunch.fragments;
 import static net.kdt.pojavlaunch.Tools.openPath;
 import static net.kdt.pojavlaunch.Tools.shareLog;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +15,6 @@ import androidx.fragment.app.Fragment;
 
 import com.kdt.mcgui.mcVersionSpinner;
 
-import net.kdt.pojavlaunch.CustomControlsActivity;
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.extra.ExtraConstants;
@@ -52,7 +50,15 @@ public class MainMenuFragment extends Fragment {
 
         mNewsButton.setOnClickListener(v -> Tools.openURL(requireActivity(), Tools.URL_HOME));
         mDiscordButton.setOnClickListener(v -> Tools.openURL(requireActivity(), getString(R.string.discord_invite)));
-        mCustomControlButton.setOnClickListener(v -> startActivity(new Intent(requireContext(), CustomControlsActivity.class)));
+        // Touch layout editor is gone, this button now opens the controller mapping
+        mCustomControlButton.setOnClickListener(v ->
+                Tools.swapFragment(requireActivity(), GamepadMapperFragment.class, GamepadMapperFragment.TAG, null));
+        Button mModsButton = view.findViewById(R.id.mods_button);
+        mModsButton.setOnClickListener(v -> {
+            Bundle args = new Bundle(1);
+            args.putBoolean(SearchModFragment.ARG_IS_MODPACK, false);
+            Tools.swapFragment(requireActivity(), SearchModFragment.class, SearchModFragment.TAG, args);
+        });
         mInstallJarButton.setOnClickListener(v -> runInstallerWithConfirmation(false));
         mInstallJarButton.setOnLongClickListener(v->{
             runInstallerWithConfirmation(true);

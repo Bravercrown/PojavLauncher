@@ -185,11 +185,14 @@ public class EfficientAndroidLWJGLKeycode {
 
         System.out.println(keyEvent.getKeyCode() + " " +keyEvent.getDisplayLabel());
         char key = (char)(keyEvent.getUnicodeChar() != 0 ? keyEvent.getUnicodeChar() : '\u0000');
+        int mods = CallbackBridge.getCurrentMods();
+        if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_AT)
+            mods |= LwjglGlfwKeycode.GLFW_MOD_SHIFT;
         sendKeyPress(
                 getValueByIndex(valueIndex),
                 key,
                 0,
-                CallbackBridge.getCurrentMods(),
+                mods,
                 keyEvent.getAction() == KeyEvent.ACTION_DOWN);
     }
 

@@ -221,25 +221,17 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         }
     }
 
+    /**
+     * Controller-only build: no on-screen touch buttons are loaded anymore.
+     * The control layout stays empty and the drawer pull button is hidden.
+     */
     private void loadControls() {
         try {
-            // Load keys
-            mControlLayout.loadLayout(
-                    minecraftProfile.controlFile == null
-                            ? LauncherPreferences.PREF_DEFAULTCTRL_PATH
-                            : Tools.CTRLMAP_PATH + "/" + minecraftProfile.controlFile);
-        } catch(IOException e) {
-            try {
-                Log.w("MainActivity", "Unable to load the control file, loading the default now", e);
-                mControlLayout.loadLayout(Tools.CTRLDEF_FILE);
-            } catch (IOException ioException) {
-                Tools.showError(this, ioException);
-            }
+            mControlLayout.loadLayout((CustomControls) null);
         } catch (Throwable th) {
             Tools.showError(this, th);
         }
-        mDrawerPullButton.setVisibility(mControlLayout.hasMenuButton() ? View.GONE : View.VISIBLE);
-        mControlLayout.toggleControlVisible();
+        mDrawerPullButton.setVisibility(View.GONE);
     }
 
     @Override
@@ -527,12 +519,8 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             mControlLayout.loadLayout((CustomControls)null);
             mControlLayout.setModifiable(false);
             System.gc();
-            mControlLayout.loadLayout(
-                    minecraftProfile.controlFile == null
-                            ? LauncherPreferences.PREF_DEFAULTCTRL_PATH
-                            : Tools.CTRLMAP_PATH + "/" + minecraftProfile.controlFile);
-            mDrawerPullButton.setVisibility(mControlLayout.hasMenuButton() ? View.GONE : View.VISIBLE);
-        } catch (IOException e) {
+            mDrawerPullButton.setVisibility(View.GONE);
+        } catch (Exception e) {
             Tools.showError(this,e);
         }
 

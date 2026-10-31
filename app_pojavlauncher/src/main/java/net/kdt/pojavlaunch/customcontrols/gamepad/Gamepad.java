@@ -25,6 +25,8 @@ import androidx.core.math.MathUtils;
 
 import net.kdt.pojavlaunch.GrabListener;
 import net.kdt.pojavlaunch.LwjglGlfwKeycode;
+import net.kdt.pojavlaunch.MainActivity;
+import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.utils.MCOptionUtils;
 
@@ -179,6 +181,9 @@ public class Gamepad implements GrabListener, GamepadHandler {
                     sendMouseButton(LwjglGlfwKeycode.GLFW_MOUSE_BUTTON_RIGHT, isDown);
                     break;
                 case GamepadMap.UNSPECIFIED:
+                    break;
+                case GamepadMap.KEYBOARD:
+                    if(isDown) Tools.MAIN_HANDLER.post(MainActivity::switchKeyboardState);
                     break;
 
                 default:

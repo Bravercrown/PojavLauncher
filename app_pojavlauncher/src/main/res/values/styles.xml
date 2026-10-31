@@ -20,7 +20,8 @@
     </style>
 
     <style name="LauncherMenuButton" parent="Widget.AppCompat.Button">
-        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:background">@drawable/menu_button_background</item>
+        <item name="android:focusable">true</item>
     </style>
 
     <style name="LauncherMenuButton.Universal" parent="LauncherMenuButton">

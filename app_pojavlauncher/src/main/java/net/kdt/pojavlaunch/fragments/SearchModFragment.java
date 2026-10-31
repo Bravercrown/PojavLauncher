@@ -30,6 +30,8 @@ import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper;
 public class SearchModFragment extends Fragment implements ModItemAdapter.SearchResultCallback {
 
     public static final String TAG = "SearchModFragment";
+    /** Bundle argument: true = search modpacks (default), false = search single mods/addons */
+    public static final String ARG_IS_MODPACK = "isModpack";
     private View mOverlay;
     private float mOverlayTopCache; // Padding cache reduce resource lookup
 
@@ -61,6 +63,8 @@ public class SearchModFragment extends Fragment implements ModItemAdapter.Search
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        Bundle args = getArguments();
+        if(args != null) mSearchFilters.isModpack = args.getBoolean(ARG_IS_MODPACK, true);
         modpackApi = new CommonApi(context.getString(R.string.curseforge_api_key));
     }
 
