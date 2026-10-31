@@ -513,7 +513,8 @@ public final class Tools {
                 fromStringArray(minecraftArgs.toArray(new String[0])):
                 versionInfo.minecraftArguments;
 
-        if(profile.isDemo()) mcArguments += " --demo";
+        // Full Minecraft edition: never pass --demo flag
+        // if(profile.isDemo()) mcArguments += " --demo";
 
         return JSONUtils.insertJSONValueList(splitAndFilterEmpty(mcArguments), varArgMap);
     }
@@ -1418,11 +1419,8 @@ public final class Tools {
     }
 
     public static void switchDemo(boolean isDemo){
-        if(isDemo) {
-            DIR_GAME_NEW = DIR_DATA + "/demo/.minecraft";
-        } else {
-            DIR_GAME_NEW = DIR_GAME_HOME + "/.minecraft";
-        }
+        // Full Minecraft edition: always use main .minecraft directory
+        DIR_GAME_NEW = DIR_GAME_HOME + "/.minecraft";
         DIR_HOME_VERSION = DIR_GAME_NEW + "/versions";
         DIR_HOME_LIBRARY = DIR_GAME_NEW + "/libraries";
         ASSETS_PATH = DIR_GAME_NEW + "/assets";
@@ -1430,8 +1428,7 @@ public final class Tools {
     }
 
     public static boolean isDemoProfile(Context ctx){
-        MinecraftAccount currentProfile = PojavProfile.getCurrentProfileContent(ctx, null);
-        return currentProfile != null && currentProfile.isDemo();
+        return false;
     }
 
     public static boolean isLocalProfile(Context ctx){
