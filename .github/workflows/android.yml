@@ -37,6 +37,16 @@ jobs:
           mkdir -p app_pojavlauncher/libs
           wget -q -O app_pojavlauncher/libs/ltw-release.aar https://github.com/PojavLauncherTeam/LTW/releases/latest/download/ltw-release.aar
 
+      - name: Fetch and Bundle Java Runtimes (JRE 8, 17, 21)
+        run: |
+          mkdir -p /tmp/jre_dl /tmp/extracted app_pojavlauncher/src/main/assets/components
+          wget -q https://github.com/PojavLauncherTeam/PojavLauncher/releases/download/gladiolus/PojavLauncher.apk -O /tmp/jre_dl/PojavLauncher.apk
+          unzip -q /tmp/jre_dl/PojavLauncher.apk 'assets/components/jre*' -d /tmp/extracted
+          cp -r /tmp/extracted/assets/components/jre app_pojavlauncher/src/main/assets/components/
+          cp -r /tmp/extracted/assets/components/jre-new app_pojavlauncher/src/main/assets/components/
+          cp -r /tmp/extracted/assets/components/jre-21 app_pojavlauncher/src/main/assets/components/
+          ls -la app_pojavlauncher/src/main/assets/components/
+
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.11"
@@ -71,22 +81,27 @@ jobs:
         continue-on-error: true
         with:
           tag_name: v3-controller
-          name: "PojavLauncher Controller Edition (APK)"
+          name: "PojavLauncher Controller Edition (Full Runtimes APK)"
           body: |
-            ### PojavLauncher Controller Edition - Android APK
+            ### PojavLauncher Controller Edition - Vollständige Android APK
             
-            Automatisch generierte APK mit vollständiger Controller-Unterstützung und optimiertem Controller-Only Modus.
+            Vollwertige Android-APK mit integrierten **Java-Runtimes (JRE 8, 17 und 21)** und allen Controller-Optimierungen.
             
-            #### Features & Änderungen:
-            - **Controller-Unterstützung**: Vordefiniertes Gamepad-Mapping für Minecraft (Springen, Schleichen, Inventar, Chat, Perspektivenwechsel).
-            - **Controller-Only Modus**: Touch-Buttons und Menü-Drawer werden für ein sauberes Vollbild-Erlebnis ausgeblendet.
-            - **B-Button Zurück**: Im Launcher-Menü dient die B-Taste als Zurück-Funktion.
-            - **Tastatur per Knopfdruck**: X-Taste öffnet die virtuelle Tastatur.
-            - **Mod- & Addon-Downloader**: Direkter Download von Mod-JARs in den Profilordner.
+            #### Enthaltene Runtimes:
+            - **Java 8 (Internal)**: Für klassische Minecraft-Versionen (1.8 bis 1.16.5)
+            - **Java 17 (Internal-17)**: Für Minecraft 1.17 bis 1.20.4
+            - **Java 21 (Internal-21)**: Für moderne Minecraft-Versionen (1.20.5+)
+            
+            #### Controller-Funktionen:
+            - **Vollständige Gamepad-Belegung**: Springen, Schleichen, Tastatur per Taste X, Inventar, Chat, Perspektivenwechsel.
+            - **Controller-Only Modus**: Sauberes Vollbild-Erlebnis ohne störende Touch-Buttons.
+            - **Mods & Addons Navigation**: Installieren-Button leuchtet bei Fokus auf und lässt sich direkt mit A drücken.
+            - **Menü-Navigation**: B-Taste als Zurück-Funktion, A-Taste zur Bestätigung.
             
             #### Installation:
             1. Lade `pojavlauncher-controller-debug.apk` unten herunter.
-            2. Installiere die APK auf deinem Android-Gerät (ggf. „Aus unbekannten Quellen installieren“ erlauben).
+            2. Installiere die APK auf deinem Android-Gerät (bestehende Version ggf. überschreiben).
+            3. Starte das Spiel – Java wird automatisch erkannt und Minecraft startet direkt!
           files: |
             out/pojavlauncher-controller-debug.apk
             out/pojavlauncher-controller-debug.md5
