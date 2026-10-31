@@ -78,20 +78,27 @@ public class MultiRTUtils {
         read(name);
     }
 
-    public static void postPrepare(String name) throws IOException {
-        File dest = new File(RUNTIME_FOLDER,"/" + name);
-        if(!dest.exists()) return;
-        Runtime runtime = read(name);
-        String libFolder = "lib";
-        if(new File(dest,libFolder + "/" + runtime.arch).exists()) libFolder = libFolder + "/" + runtime.arch;
-        File ftIn = new File(dest, libFolder + "/libfreetype.so.6");
-        File ftOut = new File(dest, libFolder + "/libfreetype.so");
-        if (ftIn.exists() && (!ftOut.exists() || ftIn.length() != ftOut.length())) {
-            if(!ftIn.renameTo(ftOut)) throw new IOException("Failed to rename freetype");
+    public static void postPrepare(String name) {
+        try {
+            File dest = new File(RUNTIME_FOLDER,"/" + name);
+            if(!dest.exists()) return;
+            Runtime runtime = read(name);
+            String libFolder = "lib";
+            if(runtime.arch != null && new File(dest,libFolder + "/" + runtime.arch).exists()) libFolder = libFolder + "/" + runtime.arch;
+            File ftIn = new File(dest, libFolder + "/libfreetype.so.6");
+            File ftOut = new File(dest, libFolder + "/libfreetype.so");
+            if (ftIn.exists() && (!ftOut.exists() || ftIn.length() != ftOut.length())) {
+                if(!ftIn.renameTo(ftOut)) {
+                    try {
+                        org.apache.commons.io.FileUtils.copyFile(ftIn, ftOut);
+                    } catch (Exception ignored) {}
+                }
+            }
+            // Refresh libraries
+            copyDummyNativeLib("libawt_xawt.so", dest, libFolder);
+        } catch (Throwable th) {
+            Log.w("MultiRT", "Non-fatal postPrepare warning: " + th.getMessage());
         }
-
-        // Refresh libraries
-        copyDummyNativeLib("libawt_xawt.so", dest, libFolder);
     }
 
     public static void installRuntimeNamedBinpack(InputStream universalFileInputStream, InputStream platformBinsInputStream, String name, String binpackVersion) throws IOException {
@@ -201,13 +208,21 @@ public class MultiRTUtils {
     }
 
     @SuppressWarnings("SameParameterValue")
-    private static void copyDummyNativeLib(String name, File dest, String libFolder) throws IOException {
-        File fileLib = new File(dest, "/"+libFolder + "/" + name);
-        FileInputStream is = new FileInputStream(new File(NATIVE_LIB_DIR, name));
-        FileOutputStream os = new FileOutputStream(fileLib);
-        IOUtils.copy(is, os);
-        is.close();
-        os.close();
+    private static void copyDummyNativeLib(String name, File dest, String libFolder) {
+        try {
+            File nativeFile = new File(NATIVE_LIB_DIR, name);
+            if (!nativeFile.exists()) {
+                Log.w("MultiRT", "Native lib " + name + " not found in " + NATIVE_LIB_DIR);
+                return;
+            }
+            File fileLib = new File(dest, "/"+libFolder + "/" + name);
+            try (FileInputStream is = new FileInputStream(nativeFile);
+                 FileOutputStream os = new FileOutputStream(fileLib)) {
+                IOUtils.copy(is, os);
+            }
+        } catch (Throwable th) {
+            Log.w("MultiRT", "Could not copy dummy native lib " + name + ": " + th.getMessage());
+        }
     }
 
     private static void installRuntimeNamedNoRemove(InputStream runtimeInputStream, File dest) throws IOException {
@@ -217,36 +232,37 @@ public class MultiRTUtils {
 
     private static void uncompressTarXZ(final InputStream tarFileInputStream, final File dest) throws IOException {
         net.kdt.pojavlaunch.utils.FileUtils.ensureDirectory(dest);
-
         byte[] buffer = new byte[8192];
         TarArchiveInputStream tarIn = new TarArchiveInputStream(
                 new XZCompressorInputStream(tarFileInputStream)
         );
         TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
-        // tarIn is a TarArchiveInputStream
         while (tarEntry != null) {
-
-            final String tarEntryName = tarEntry.getName();
-            // publishProgress(null, "Unpacking " + tarEntry.getName());
-            ProgressLayout.setProgress(ProgressLayout.UNPACK_RUNTIME, 100, R.string.global_unpacking, tarEntryName);
-
-            File destPath = new File(dest, tarEntry.getName());
-            net.kdt.pojavlaunch.utils.FileUtils.ensureParentDirectory(destPath);
-            if (tarEntry.isSymbolicLink()) {
+            String tarEntryName = tarEntry.getName();
+            if (tarEntryName.startsWith("./")) {
+                tarEntryName = tarEntryName.substring(2);
+            }
+            if (!tarEntryName.isEmpty()) {
+                ProgressLayout.setProgress(ProgressLayout.UNPACK_RUNTIME, 100, R.string.global_unpacking, tarEntryName);
+                File destPath = new File(dest, tarEntryName);
                 try {
-                    // android.system.Os
-                    // Libcore one support all Android versions
-                    Os.symlink(tarEntry.getName(), tarEntry.getLinkName());
-                } catch (Throwable e) {
-                    Log.e("MultiRT", e.toString());
+                    net.kdt.pojavlaunch.utils.FileUtils.ensureParentDirectory(destPath);
+                    if (tarEntry.isSymbolicLink()) {
+                        try {
+                            Os.symlink(tarEntry.getName(), tarEntry.getLinkName());
+                        } catch (Throwable e) {
+                            Log.e("MultiRT", e.toString());
+                        }
+                    } else if (tarEntry.isDirectory()) {
+                        net.kdt.pojavlaunch.utils.FileUtils.ensureDirectory(destPath);
+                    } else if (!destPath.exists() || destPath.length() != tarEntry.getSize()) {
+                        try (FileOutputStream os = new FileOutputStream(destPath)) {
+                            IOUtils.copyLarge(tarIn, os, buffer);
+                        }
+                    }
+                } catch (Throwable entryErr) {
+                    Log.w("MultiRT", "Failed extracting " + tarEntryName + ": " + entryErr.getMessage());
                 }
-
-            } else if (tarEntry.isDirectory()) {
-                net.kdt.pojavlaunch.utils.FileUtils.ensureDirectory(destPath);
-            } else if (!destPath.exists() || destPath.length() != tarEntry.getSize()) {
-                FileOutputStream os = new FileOutputStream(destPath);
-                IOUtils.copyLarge(tarIn, os, buffer);
-                os.close();
             }
             tarEntry = tarIn.getNextTarEntry();
         }

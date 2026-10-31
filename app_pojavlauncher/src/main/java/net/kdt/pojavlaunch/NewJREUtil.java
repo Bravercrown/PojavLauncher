@@ -34,16 +34,37 @@ public class NewJREUtil {
         else return true;
     }
 
+    private static java.io.InputStream openArchitectureBin(AssetManager assetManager, String basePath) throws IOException {
+        String arch = archAsString(Tools.DEVICE_ARCHITECTURE);
+        try {
+            return assetManager.open(basePath + "/bin-" + arch + ".tar.xz");
+        } catch (IOException e) {
+            String[] fallbacks = new String[]{"arm64", "arm", "x86_64", "x86"};
+            for (String fallback : fallbacks) {
+                try {
+                    return assetManager.open(basePath + "/bin-" + fallback + ".tar.xz");
+                } catch (IOException ignored) {}
+            }
+            throw e;
+        }
+    }
+
     private static boolean unpackInternalRuntime(AssetManager assetManager, InternalRuntime internalRuntime, String version) {
         try {
             MultiRTUtils.installRuntimeNamedBinpack(
                     assetManager.open(internalRuntime.path+"/universal.tar.xz"),
-                    assetManager.open(internalRuntime.path+"/bin-" + archAsString(Tools.DEVICE_ARCHITECTURE) + ".tar.xz"),
+                    openArchitectureBin(assetManager, internalRuntime.path),
                     internalRuntime.name, version);
             MultiRTUtils.postPrepare(internalRuntime.name);
             return true;
-        }catch (IOException e) {
+        }catch (Exception e) {
             Log.e("NewJREAuto", "Internal JRE unpack failed", e);
+            java.io.File javaBin = new java.io.File(Tools.MULTIRT_HOME, internalRuntime.name + "/bin/java");
+            java.io.File release = new java.io.File(Tools.MULTIRT_HOME, internalRuntime.name + "/release");
+            if (javaBin.exists() && release.exists()) {
+                Log.i("NewJREAuto", "Java binary and release exist, proceeding!");
+                return true;
+            }
             return false;
         }
     }

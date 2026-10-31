@@ -259,7 +259,10 @@ public class MinecraftDownloader {
         }
 
         if(activity != null && !NewJREUtil.installNewJreIfNeeded(activity, verInfo)){
-            return false;
+            if (MultiRTUtils.getRuntimes().isEmpty()) {
+                return false;
+            }
+            Log.w("MinecraftDownloader", "installNewJreIfNeeded returned false, but existing runtime available, continuing!");
         }
 
         JAssets assets = downloadAssetsIndex(verInfo);
