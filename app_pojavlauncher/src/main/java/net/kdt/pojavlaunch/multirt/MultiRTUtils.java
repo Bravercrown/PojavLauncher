@@ -62,10 +62,20 @@ public class MultiRTUtils {
     public static String getNearestJreName(int majorVersion) {
         List<Runtime> runtimes = getRuntimes();
         MathUtils.RankedValue<Runtime> nearestRankedRuntime = MathUtils.findNearestPositive(majorVersion, runtimes, (runtime)->runtime.javaVersion);
-        if(nearestRankedRuntime == null) return null;
-        Runtime nearestRuntime = nearestRankedRuntime.value;
-        if(nearestRuntime == null) return null;
-        return nearestRuntime.name;
+        if(nearestRankedRuntime != null && nearestRankedRuntime.value != null) {
+            return nearestRankedRuntime.value.name;
+        }
+        // Fallback: pick the highest available runtime (e.g. Java 21) instead of returning null
+        Runtime highest = null;
+        for (Runtime r : runtimes) {
+            if (highest == null || r.javaVersion > highest.javaVersion) {
+                highest = r;
+            }
+        }
+        if (highest != null) {
+            return highest.name;
+        }
+        return null;
     }
 
     public static void installRuntimeNamed(String nativeLibDir, InputStream runtimeInputStream, String name) throws IOException {
