@@ -101,7 +101,7 @@ public class NewJREUtil {
         String profileRuntime = Tools.getSelectedRuntime(minecraftProfile);
         Runtime runtime = MultiRTUtils.read(profileRuntime);
         // Partly trust the user with his own selection, if the game can even try to run in this case
-        if (runtime.javaVersion >= gameRequiredVersion) {
+        if (runtime.javaVersion >= gameRequiredVersion || (runtime.javaVersion > 0 && gameRequiredVersion > 21)) {
             // Check whether the selection is an internal runtime
             InternalRuntime internalRuntime = getInternalRuntime(runtime);
             // If it is, check if updates are available from the APK file
@@ -121,15 +121,18 @@ public class NewJREUtil {
                 nearestInternalRuntime, nearestInstalledRuntime, (value)->value.rank
         );
 
-        // No possible selections
-        if(selectedRankedRuntime == null) {
-            showRuntimeFail(activity, versionInfo);
-            return false;
-        }
-
-        Object selected = selectedRankedRuntime.value;
+        Object selected;
         String appropriateRuntime;
         InternalRuntime internalRuntime;
+
+        if (selectedRankedRuntime != null) {
+            selected = selectedRankedRuntime.value;
+        } else {
+            // Target version exceeded available runtimes (e.g. Java 25 requested).
+            // Fall back to highest available internal runtime (JRE 21) instead of blocking.
+            Log.w("NewJREAuto", "Target version " + gameRequiredVersion + " exceeded available runtimes, falling back to JRE 21");
+            selected = InternalRuntime.JRE_21;
+        }
 
         // Perform checks on the picked runtime
         if(selected instanceof Runtime) {
