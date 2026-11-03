@@ -1251,7 +1251,7 @@ public final class Tools {
         String runtime = getSelectedRuntime(minecraftProfile);
         String profileRuntime = getRuntimeName(minecraftProfile.javaDir);
         Runtime pickedRuntime = MultiRTUtils.read(runtime);
-        if(runtime == null || pickedRuntime.javaVersion == 0 || (pickedRuntime.javaVersion < targetJavaVersion && targetJavaVersion <= 21)) {
+        if(runtime == null || pickedRuntime.javaVersion == 0 || pickedRuntime.javaVersion < targetJavaVersion) {
             String preferredRuntime = MultiRTUtils.getNearestJreName(targetJavaVersion);
             if(preferredRuntime == null) {
                 List<Runtime> all = MultiRTUtils.getRuntimes();

@@ -94,6 +94,11 @@ public class NewJREUtil {
             return true;
 
         int gameRequiredVersion = versionInfo.javaVersion.majorVersion;
+        if (gameRequiredVersion > 21) {
+            Tools.dialogOnUiThread(activity, activity.getString(R.string.global_error),
+                "Minecraft " + versionInfo.id + " benötigt Java 25 (Class-Version 69), welches für Android noch nicht verfügbar ist.\n\nBitte wähle in der Versionsauswahl eine stabile Version wie 1.21.11, 1.21.4 oder 1.20.4 aus, die perfekt mit dem integrierten Java 21 läuft!");
+            return false;
+        }
 
         LauncherProfiles.load();
         AssetManager assetManager = activity.getAssets();

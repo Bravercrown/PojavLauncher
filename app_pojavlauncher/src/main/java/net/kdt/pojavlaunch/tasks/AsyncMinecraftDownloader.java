@@ -9,7 +9,17 @@ public class AsyncMinecraftDownloader {
     public static String normalizeVersionId(String versionString) {
         JMinecraftVersionList versionList = (JMinecraftVersionList) ExtraCore.getValue(ExtraConstants.RELEASE_TABLE);
         if(versionList == null || versionList.versions == null) return versionString;
-        if(MinecraftProfile.LATEST_RELEASE.equals(versionString)) versionString = versionList.latest.get("release");
+        if(MinecraftProfile.LATEST_RELEASE.equals(versionString)) {
+            versionString = versionList.latest.get("release");
+            if(versionString != null && (versionString.startsWith("26.") || versionString.startsWith("25."))) {
+                for(JMinecraftVersionList.Version version : versionList.versions) {
+                    if("release".equals(version.type) && version.id.startsWith("1.")) {
+                        versionString = version.id;
+                        break;
+                    }
+                }
+            }
+        }
         if(MinecraftProfile.LATEST_SNAPSHOT.equals(versionString)) versionString = versionList.latest.get("snapshot");
         return versionString;
     }
